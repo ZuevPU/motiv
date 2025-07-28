@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Тест «Определение ведущего мотива»</title>
+<style>
+:root{
+  --bg:#f7f7f9; --fg:#222; --accent:#1e88e5; --danger:#e53935; --ok:#43a047; --muted:#777;
+  --card:#fff; --radius:14px;
+  font-size:16px;
+}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
+h1,h2,h3{margin:0 0 .5em 0; font-weight:600;}
+main{max-width:980px;margin:0 auto;padding:20px;}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:0 2px 6px rgba(0,0,0,.06);padding:20px;margin-bottom:20px;}
+.question{margin-bottom:24px;}
+.question h3{margin-bottom:10px;font-size:1.05rem;}
+.answers{display:grid;grid-template-columns:1fr 110px;gap:8px 12px;align-items:center;}
+.answers label{line-height:1.3;}
+select{width:100%;padding:4px 6px;border:1px solid #ccc;border-radius:6px;font-size:0.95rem;background:#fafafa;}
+select.error{border-color:var(--danger);background:#fff5f5;}
+#result{display:none;}
+table{border-collapse:collapse;width:100%;margin-top:16px;}
+th,td{border:1px solid #ddd;padding:6px 8px;text-align:left;font-size:0.95rem;}
+th{background:#fafafa;}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;background:var(--accent);color:#fff;font-size:0.8rem;margin-left:6px;}
+button{cursor:pointer;padding:10px 18px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-size:1rem;}
+button:disabled{opacity:.5;cursor:not-allowed;}
+.notice{color:var(--muted);font-size:0.9rem;margin-top:6px;}
+.errorText{color:var(--danger);font-size:0.9rem;margin:6px 0 0;}
+.success{color:var(--ok);}
+@media(max-width:600px){
+  .answers{grid-template-columns:1fr 80px;}
+}
+</style>
+</head>
+<body>
+<main>
+  <h1>Тест «Определение ведущего мотива»</h1>
+  <p class="notice">В каждом вопросе расставьте приоритеты: 1 — наиболее подходящий вариант, 5 — наименее.</p>
+
+  <form id="testForm">
+    <!-- Контейнер для вопросов -->
+  </form>
+
+  <div class="card" id="result">
+    <h2>Ваш результат</h2>
+    <p id="leadMotivation" class="success"></p>
+    <table id="resultTable">
+      <thead><tr><th>Мотив</th><th>Сумма баллов</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</main>
+
+<script>
+// ===== ДАННЫЕ =====
+const QUESTIONS = [
+  {
+    q: "1. Что Вас больше замотивирует выполнить сложное сверхурочное задание?",
+    a: [
+      "дополнительная оплата",                      // 1
+      "возможность заявить о себе руководству",     // 2
+      "возможность сделать интересную творческую работу", //3
+      "вызов – возможность доказать себе, что Вы можете сделать это на высшем уровне", //4
+      "то, что это важно для достижения целей компании" //5
+    ]
+  },
+  {
+    q: "2. Если бы Вы были руководителем, то какой способ награды за хорошую работу вы бы использовали для своих сотрудников?",
+    a: [
+      "премия",
+      "награждение званием «Лучший…» и публичная похвала",
+      "дал бы большую свободу в действиях",
+      "послал бы учиться",
+      "включил бы в состав группы, участвующей в принятии важных решений"
+    ]
+  },
+  {
+    q: "3. Какую компанию Вы скорее выберете?",
+    a: [
+      "где больше платят",
+      "где лучше коллектив",
+      "где будут интересные для вас задачи",
+      "где вам нужно обучаться и развиваться",
+      "с которой совпадут ваши убеждения и ценности"
+    ]
+  },
+  {
+    q: "4. С каким руководителем Вам бы НЕ хотелось работать?",
+    a: [
+      "с тем, кто не дает зарабатывать",
+      "с тем, кто уделяет мало внимания сотрудникам",
+      "с тем, кто постоянно контролирует",
+      "с не профессиональным",
+      "с тем, кто скрывает информацию о ситуации в компании"
+    ]
+  },
+  {
+    q: "5. Что бы вы хотели получить от продвижения по карьерной лестнице?",
+    a: [
+      "хорошие деньги",
+      "признание",
+      "свободу",
+      "развитие профессионализма",
+      "возможность влиять на развитие компании"
+    ]
+  },
+  {
+    q: "6. На ваш взгляд хороший руководитель это тот, кто",
+    a: [
+      "будет справедливым в распределении денег",
+      "будет публично признавать личный вклад каждого и поддерживать коллектив",
+      "будет давать время на подготовку, не будет торопить",
+      "будет давать возможность реализовать потенциал по максимуму",
+      "будет всей душой болеть за общее дело"
+    ]
+  },
+  {
+    q: "7. Что вам не нравилось в прошлой работе больше всего",
+    a: [
+      "отсутствие адекватной материальной компенсации и/или ее несправедливость",
+      "плохой коллектив и/или невнимательный руководитель",
+      "очень жесткие рамки, много рутины",
+      "отсутствие роста и перспективы",
+      "отсутствие целей и принципов у самой компании"
+    ]
+  },
+  {
+    q: "8. Наиболее значимое для вас слово",
+    a: [
+      "вознаграждение",
+      "признание",
+      "творчество",
+      "достижения",
+      "команда"
+    ]
+  },
+  {
+    q: "9. Какой бы текст объявления, рядом с названием вакансии, вас бы больше привлек, если написанное – правда!",
+    a: [
+      "возможности заработка неограниченны, самое прибыльное направление!",
+      "прекрасный коллектив, совместный досуг, присоединяйтесь к нашей семье!",
+      "творческая работа, требующая погружения. График свободный!",
+      "требуются суперпрофессионалы! Обучение мирового уровня за счет компании",
+      "работа в великой компании, на благо общества! Для тех, кто не боится участвовать в принятии решений!"
+    ]
+  },
+  {
+    q: "10. Как бы вы, будучи руководителем, простимулировали сотрудника выполнить сложную задачу, не входящую в его обязанности",
+    a: [
+      "деньги",
+      "попросил бы лично, ради меня",
+      "объяснил бы какая это интересная творческая задача",
+      "бросил бы вызов, взял бы «на слабо»",
+      "объяснил бы, как это важно для достижения целей всей компании"
+    ]
+  }
+];
+
+// Соответствие «номер варианта» -> «мотив»
+const MOTIVES = {
+  1: "Мотив вознаграждения – сотрудник работает ради денег и других благ",
+  2: "Социальный мотив – работнику важно одобрение руководства и коллектива",
+  3: "Процессный мотив – сотрудник трудится ради удовольствия от самого процесса работы",
+  4: "Мотив достижения – сотрудник стремится к самоутверждению и самореализации",
+  5: "Идейный мотив – для сотрудника важно достижение совместных с компанией высоких целей"
+};
+
+// ===== РЕНДЕР ФОРМЫ =====
+const form = document.getElementById('testForm');
+QUESTIONS.forEach((q, qi)=>{
+  const card = document.createElement('div');
+  card.className = 'card question';
+  card.innerHTML = `<h3>${q.q}</h3><div class="answers"></div><div class="errorText" style="display:none"></div>`;
+  const wrap = card.querySelector('.answers');
+  q.a.forEach((ans, ai)=>{
+    const id = `q${qi}_a${ai}`;
+    const label = document.createElement('label');
+    label.setAttribute('for', id);
+    label.textContent = ans;
+    const select = document.createElement('select');
+    select.name = id;
+    select.id = id;
+    select.dataset.variant = ai+1; // 1..5
+    select.dataset.question = qi;
+    const opt0 = document.createElement('option');
+    opt0.value = '';
+    opt0.textContent = '—';
+    select.appendChild(opt0);
+    for(let v=1; v<=5; v++){
+      const o = document.createElement('option');
+      o.value = v;
+      o.textContent = v;
+      select.appendChild(o);
+    }
+    wrap.appendChild(label);
+    wrap.appendChild(select);
+  });
+  form.appendChild(card);
+});
+
+const submitBtn = document.createElement('button');
+submitBtn.type = 'button';
+submitBtn.textContent = 'Получить результат';
+form.appendChild(submitBtn);
+
+const errorGlobal = document.createElement('div');
+errorGlobal.className = 'errorText';
+errorGlobal.style.display = 'none';
+form.appendChild(errorGlobal);
+
+// ===== ЛОГИКА ВАЛИДАЦИИ И ПОДСЧЁТА =====
+submitBtn.addEventListener('click', ()=>{
+  errorGlobal.style.display = 'none';
+  const selects = form.querySelectorAll('select');
+  let hasError = false;
+
+  // Сброс ошибок
+  selects.forEach(s=>s.classList.remove('error'));
+  form.querySelectorAll('.errorText').forEach(e=>{e.style.display='none'; e.textContent='';});
+
+  // Проверка: все заполнены
+  selects.forEach(s=>{
+    if(!s.value){
+      s.classList.add('error');
+      hasError = true;
+    }
+  });
+
+  // Проверка уникальности 1-5 в каждом вопросе
+  for(let qi=0; qi<QUESTIONS.length; qi++){
+    const qsels = [...selects].filter(s=>+s.dataset.question===qi);
+    const values = qsels.map(s=>s.value);
+    const set = new Set(values);
+    if(set.size!==5){
+      hasError = true;
+      // пометить повторяющиеся/пустые
+      const errBlock = qsels[0].closest('.question').querySelector('.errorText');
+      errBlock.textContent = 'В каждом вопросе должны быть использованы все значения 1–5 без повторов.';
+      errBlock.style.display='block';
+      // Подсветка дубликатов
+      values.forEach((v,i)=>{
+        if(v && values.indexOf(v)!==i){ qsels[i].classList.add('error'); }
+      });
+    }
+  }
+
+  if(hasError){
+    errorGlobal.textContent = 'Проверьте выделенные поля.';
+    errorGlobal.style.display='block';
+    return;
+  }
+
+  // Подсчёт
+  const totals = {1:0,2:0,3:0,4:0,5:0};
+  selects.forEach(s=>{
+    const motiveNumber = +s.dataset.variant; // 1..5 (вариант ответа)
+    const rank = +s.value;                   // 1..5 (назначенный приоритет)
+    totals[motiveNumber] += rank;
+  });
+
+  // Сортировка мотивов по возрастанию суммы
+  const sorted = Object.entries(totals).sort((a,b)=>a[1]-b[1]);
+
+  // Вывод
+  const lead = sorted[0][0];
+  document.getElementById('leadMotivation').innerHTML =
+    `Ведущий мотив: <strong>${MOTIVES[lead]}</strong> (сумма баллов: ${sorted[0][1]})`;
+
+  // Таблица
+  const tbody = document.querySelector('#resultTable tbody');
+  tbody.innerHTML = '';
+  sorted.forEach(([num,sum])=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${MOTIVES[num]}</td><td>${sum}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('result').style.display='block';
+  window.scrollTo({top:document.getElementById('result').offsetTop-10,behavior:'smooth'});
+});
+
+// Авто-отключение уже выбранных чисел в пределах вопроса (кастомный UX)
+form.addEventListener('change', (e)=>{
+  if(e.target.tagName!=='SELECT') return;
+  const qi = +e.target.dataset.question;
+  const qsels = [...form.querySelectorAll(`select[data-question="${qi}"]`)];
+  const chosen = new Set(qsels.filter(s=>s.value).map(s=>s.value));
+  qsels.forEach(sel=>{
+    [...sel.options].forEach(opt=>{
+      if(opt.value && opt.value !== sel.value && chosen.has(opt.value)){
+        opt.disabled = true;
+      }else{
+        // не блокируем дефолт
+        if(opt.value==='') opt.disabled=false;
+        if(!chosen.has(opt.value)) opt.disabled=false;
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>
