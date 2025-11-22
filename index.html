@@ -3,46 +3,725 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тест на определение ведущего мотива</title>
-    <meta name="description" content="Пройти тест для определения вашего ведущего мотива в работе">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <title>Тест: Определение ведущего мотива</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #6b8cbc;
+            --accent-color: #ff7e5f;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --border-radius: 12px;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            margin: 20px 0 15px;
+            font-size: 1.4rem;
+        }
+
+        .intro {
+            background-color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .progress-container {
+            margin: 20px 0;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            height: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: var(--transition);
+        }
+
+        .question-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            min-height: 60px;
+        }
+
+        .option:hover {
+            border-color: var(--secondary-color);
+        }
+
+        .option.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(74, 111, 165, 0.05);
+        }
+
+        .option-rank {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            margin-right: 10px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .rank-1 { background-color: #28a745; }
+        .rank-2 { background-color: #20c997; }
+        .rank-3 { background-color: #ffc107; color: #212529; }
+        .rank-4 { background-color: #fd7e14; }
+        .rank-5 { background-color: #dc3545; }
+
+        .buttons-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            flex: 1;
+            font-size: 1rem;
+        }
+
+        #reset-btn {
+            background-color: #e9ecef;
+            color: var(--dark-color);
+        }
+
+        #reset-btn:hover {
+            background-color: #dee2e6;
+        }
+
+        #results-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        #results-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        #results-btn:disabled {
+            background-color: #adb5bd;
+            cursor: not-allowed;
+        }
+
+        .results-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            margin-top: 30px;
+            display: none;
+        }
+
+        .motivation-chart {
+            margin: 25px 0;
+        }
+
+        .motivation-item {
+            margin-bottom: 15px;
+        }
+
+        .motivation-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .motivation-bar-container {
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .motivation-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 1s ease;
+        }
+
+        .interpretation {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .motivation-details {
+            margin-top: 15px;
+            padding-left: 20px;
+        }
+
+        .motivation-details li {
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            h2 {
+                font-size: 1.2rem;
+            }
+            
+            .option {
+                padding: 12px;
+                min-height: 50px;
+            }
+            
+            button {
+                padding: 10px 15px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <header class="header">
-            <h1>Тест на определение ведущего мотива</h1>
-            <p class="subtitle">Узнайте, что действительно мотивирует вас в работе</p>
+        <header>
+            <h1>Определение ведущего мотива</h1>
+            <p>Психологический тест для выявления ключевых мотиваторов в работе</p>
         </header>
 
-        <main>
-            <section id="instructions" class="card">
-                <h2>Инструкция</h2>
-                <p>Прочитайте каждый вопрос и все варианты ответов. Затем проранжируйте варианты ответов, присваивая цифру <strong>1</strong> ответу, <strong>наиболее подходящему для Вас</strong>, цифру 2 чуть менее подходящему и так далее до цифры <strong>5</strong> (<strong>наименее подходящий для Вас ответ</strong>).</p>
-                <button id="start-test" class="btn">Начать тест</button>
-            </section>
+        <section class="intro">
+            <h2>Инструкция</h2>
+            <p>Прочитайте вопрос и все варианты ответов, затем проранжируйте варианты ответов, присваивая цифру <strong>1</strong> ответу, <strong>наиболее подходящему для Вас</strong>, цифру 2 чуть менее подходящему и так далее до цифры <strong>5</strong> (<strong>наименее подходящий для Вас ответ</strong>).</p>
+            <p>Для выбора рейтинга просто нажимайте на варианты ответов в порядке предпочтения.</p>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <p id="progress-text">Прогресс: 0/10 вопросов</p>
+        </section>
 
-            <form id="test-form" class="hidden">
-                <div class="questions-container"></div>
-                <button type="submit" class="btn">Получить результаты</button>
-            </form>
+        <section id="questions-container">
+            <!-- Вопросы будут сгенерированы JavaScript -->
+        </section>
 
-            <section id="results" class="card hidden">
-                <h2>Ваши результаты</h2>
-                <div class="motivation-profile">
-                    <div class="profile-chart"></div>
-                    <div class="profile-description"></div>
-                </div>
-                <button id="retake-test" class="btn">Пройти тест снова</button>
-            </section>
-        </main>
+        <div class="buttons-container">
+            <button id="reset-btn">Сбросить ответы</button>
+            <button id="results-btn" disabled>Показать результаты</button>
+        </div>
 
-        <footer class="footer">
-            <p>Тест на определение мотивации</p>
-        </footer>
+        <section class="results-container" id="results-container">
+            <h2>Результаты теста</h2>
+            <div class="motivation-chart" id="motivation-chart">
+                <!-- График мотивации будет сгенерирован JavaScript -->
+            </div>
+            <div class="interpretation" id="interpretation">
+                <!-- Интерпретация результатов будет сгенерирована JavaScript -->
+            </div>
+        </section>
     </div>
 
-    <script src="script.js"></script>
-</body>
+    <script>
+        // Данные теста
+        const testData = {
+            title: "Определение ведущего мотива",
+            questions: [
+                {
+                    id: 1,
+                    text: "Что Вас больше замотивирует выполнить сложное сверхурочное задание?",
+                    options: [
+                        "дополнительная оплата",
+                        "возможность заявить о себе руководству",
+                        "возможность сделать интересную творческую работу",
+                        "вызов -- возможность доказать себе, что Вы можете сделать это на высшем уровне",
+                        "то, что это важно для достижения целей компании"
+                    ]
+                },
+                {
+                    id: 2,
+                    text: "Если бы Вы были руководителем, то какой способ награды за хорошую работу вы бы использовали для своих сотрудников?",
+                    options: [
+                        "премия",
+                        "награждение званием «Лучший...» и публичная похвала",
+                        "дал бы большую свободу в действиях",
+                        "послал бы учиться",
+                        "включил бы в состав группы, участвующей в принятии важных решений"
+                    ]
+                },
+                {
+                    id: 3,
+                    text: "Какую компанию Вы скорее выберете?",
+                    options: [
+                        "где больше платят",
+                        "где лучше коллектив",
+                        "где будут интересные для вас задачи",
+                        "где вам нужно обучаться и развиваться",
+                        "с которой совпадут ваши убеждения и ценности"
+                    ]
+                },
+                {
+                    id: 4,
+                    text: "С каким руководителем Вам бы НЕ хотелось работать?",
+                    options: [
+                        "с тем, кто не дает зарабатывать",
+                        "с тем, кто уделяет мало внимания сотрудникам",
+                        "с тем, кто постоянно контролирует",
+                        "с не профессиональным",
+                        "с тем, кто скрывает информацию о ситуации в компании"
+                    ]
+                },
+                {
+                    id: 5,
+                    text: "Что бы вы хотели получить от продвижения по карьерной лестнице?",
+                    options: [
+                        "хорошие деньги",
+                        "признание",
+                        "свободу",
+                        "развитие профессионализма",
+                        "возможность влиять на развитие компании"
+                    ]
+                },
+                {
+                    id: 6,
+                    text: "На ваш взгляд хороший руководитель это тот, кто",
+                    options: [
+                        "будет справедливым в распределении денег",
+                        "будет публично признавать личный вклад каждого и поддерживать коллектив",
+                        "будет давать время на подготовку, не будет торопить",
+                        "будет давать возможность реализовать потенциал по максимуму",
+                        "будет всей душой болеть за общее дело"
+                    ]
+                },
+                {
+                    id: 7,
+                    text: "Что вам не нравилось в прошлой работе больше всего",
+                    options: [
+                        "отсутствие адекватной материальной компенсации и/или ее несправедливость",
+                        "плохой коллектив и/или невнимательный руководитель",
+                        "очень жесткие рамки, много рутины",
+                        "отсутствие роста и перспективы",
+                        "отсутствие целей и принципов у самой компании"
+                    ]
+                },
+                {
+                    id: 8,
+                    text: "Наиболее значимое для вас слово",
+                    options: [
+                        "вознаграждение",
+                        "признание",
+                        "творчество",
+                        "достижения",
+                        "команда"
+                    ]
+                },
+                {
+                    id: 9,
+                    text: "Какой бы текст объявления, рядом с названием вакансии, вас бы больше привлек, если написанное -- правда!",
+                    options: [
+                        "возможности заработка неограниченны, самое прибыльное направление!",
+                        "прекрасный коллектив, совместный досуг, присоединяйтесь к нашей семье!",
+                        "творческая работа, требующая погружения. График свободный!",
+                        "требуются суперпрофессионалы! Обучение мирового уровня за счет компании",
+                        "работа в великой компании, на благо общества! Для тех, кто не боится участвовать в принятии решений!"
+                    ]
+                },
+                {
+                    id: 10,
+                    text: "Как бы вы, будучи руководителем, простимулировали сотрудника выполнить сложную задачу, не входящую в его обязанности",
+                    options: [
+                        "деньги",
+                        "попросил бы лично, ради меня",
+                        "объяснил бы какая это интересная творческая задача",
+                        "бросил бы вызов, взял бы «на слабо»",
+                        "объяснил бы, как это важно для достижения целей всей компании"
+                    ]
+                }
+            ],
+            motivations: [
+                {
+                    id: 1,
+                    name: "Мотив вознаграждения",
+                    description: "сотрудник работает ради денег и других благ"
+                },
+                {
+                    id: 2,
+                    name: "Социальный мотив",
+                    description: "работнику важно одобрение руководства и коллектива"
+                },
+                {
+                    id: 3,
+                    name: "Процессный мотив",
+                    description: "сотрудник трудится ради удовольствия от самого процесса работы"
+                },
+                {
+                    id: 4,
+                    name: "Мотив достижения",
+                    description: "сотрудник стремиться к самоутверждению и самореализации"
+                },
+                {
+                    id: 5,
+                    name: "Идейный мотив",
+                    description: "для сотрудника важно достижение совместных с компанией высоких целей"
+                }
+            ]
+        };
 
+        // Состояние приложения
+        let userAnswers = {};
+        let currentQuestionId = 1;
+
+        // Инициализация приложения
+        document.addEventListener('DOMContentLoaded', function() {
+            renderQuestions();
+            updateProgress();
+            setupEventListeners();
+        });
+
+        // Рендеринг вопросов
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+
+            testData.questions.forEach(question => {
+                const questionCard = document.createElement('div');
+                questionCard.className = 'question-card';
+                questionCard.id = `question-${question.id}`;
+                
+                const questionText = document.createElement('div');
+                questionText.className = 'question-text';
+                questionText.textContent = `${question.id}. ${question.text}`;
+                
+                const optionsContainer = document.createElement('div');
+                optionsContainer.className = 'options-container';
+                
+                question.options.forEach((option, index) => {
+                    const optionElement = document.createElement('div');
+                    optionElement.className = 'option';
+                    optionElement.dataset.optionId = index + 1;
+                    optionElement.dataset.questionId = question.id;
+                    
+                    const optionRank = document.createElement('div');
+                    optionRank.className = 'option-rank';
+                    optionRank.textContent = '?';
+                    
+                    const optionText = document.createElement('div');
+                    optionText.className = 'option-text';
+                    optionText.textContent = option;
+                    
+                    optionElement.appendChild(optionRank);
+                    optionElement.appendChild(optionText);
+                    optionsContainer.appendChild(optionElement);
+                });
+                
+                questionCard.appendChild(questionText);
+                questionCard.appendChild(optionsContainer);
+                container.appendChild(questionCard);
+            });
+        }
+
+        // Настройка обработчиков событий
+        function setupEventListeners() {
+            // Обработчики для выбора вариантов ответов
+            document.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', handleOptionClick);
+            });
+            
+            // Обработчики для кнопок
+            document.getElementById('reset-btn').addEventListener('click', resetTest);
+            document.getElementById('results-btn').addEventListener('click', showResults);
+        }
+
+        // Обработка клика по варианту ответа
+        function handleOptionClick(event) {
+            const optionElement = event.currentTarget;
+            const questionId = parseInt(optionElement.dataset.questionId);
+            const optionId = parseInt(optionElement.dataset.optionId);
+            
+            // Если вопрос еще не начат, инициализируем его
+            if (!userAnswers[questionId]) {
+                userAnswers[questionId] = {};
+            }
+            
+            const currentRank = userAnswers[questionId][optionId];
+            
+            // Если вариант уже выбран, снимаем выбор
+            if (currentRank) {
+                delete userAnswers[questionId][optionId];
+                updateOptionVisual(optionElement, null);
+            } else {
+                // Находим следующий доступный ранг
+                const nextRank = getNextAvailableRank(questionId);
+                
+                if (nextRank <= 5) {
+                    userAnswers[questionId][optionId] = nextRank;
+                    updateOptionVisual(optionElement, nextRank);
+                }
+            }
+            
+            updateProgress();
+        }
+
+        // Получение следующего доступного ранга для вопроса
+        function getNextAvailableRank(questionId) {
+            if (!userAnswers[questionId]) return 1;
+            
+            const ranks = Object.values(userAnswers[questionId]);
+            for (let i = 1; i <= 5; i++) {
+                if (!ranks.includes(i)) {
+                    return i;
+                }
+            }
+            return 6; // Все ранги уже заняты
+        }
+
+        // Обновление визуального отображения варианта ответа
+        function updateOptionVisual(optionElement, rank) {
+            const rankElement = optionElement.querySelector('.option-rank');
+            
+            if (rank) {
+                rankElement.textContent = rank;
+                rankElement.className = `option-rank rank-${rank}`;
+                optionElement.classList.add('selected');
+            } else {
+                rankElement.textContent = '?';
+                rankElement.className = 'option-rank';
+                optionElement.classList.remove('selected');
+            }
+        }
+
+        // Обновление прогресса прохождения теста
+        function updateProgress() {
+            const answeredQuestions = Object.keys(userAnswers).length;
+            const progress = (answeredQuestions / testData.questions.length) * 100;
+            
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            document.getElementById('progress-text').textContent = `Прогресс: ${answeredQuestions}/${testData.questions.length} вопросов`;
+            
+            // Активируем кнопку показа результатов, если все вопросы отвечены
+            const resultsBtn = document.getElementById('results-btn');
+            resultsBtn.disabled = answeredQuestions !== testData.questions.length;
+        }
+
+        // Сброс теста
+        function resetTest() {
+            userAnswers = {};
+            renderQuestions();
+            setupEventListeners();
+            updateProgress();
+            
+            // Скрываем результаты
+            document.getElementById('results-container').style.display = 'none';
+        }
+
+        // Показать результаты
+        function showResults() {
+            // Проверяем, что все вопросы отвечены
+            if (Object.keys(userAnswers).length !== testData.questions.length) {
+                alert('Пожалуйста, ответьте на все вопросы перед просмотром результатов.');
+                return;
+            }
+            
+            // Вычисляем результаты
+            const results = calculateResults();
+            
+            // Отображаем результаты
+            displayResults(results);
+            
+            // Прокручиваем к результатам
+            document.getElementById('results-container').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Вычисление результатов
+        function calculateResults() {
+            const scores = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
+            
+            // Суммируем баллы по каждому мотиву
+            Object.keys(userAnswers).forEach(questionId => {
+                Object.keys(userAnswers[questionId]).forEach(optionId => {
+                    const rank = userAnswers[questionId][optionId];
+                    scores[optionId] += rank;
+                });
+            });
+            
+            // Находим минимальный балл (ведущий мотив)
+            let minScore = Infinity;
+            let leadingMotivation = null;
+            
+            Object.keys(scores).forEach(motivationId => {
+                if (scores[motivationId] < minScore) {
+                    minScore = scores[motivationId];
+                    leadingMotivation = parseInt(motivationId);
+                }
+            });
+            
+            return {
+                scores: scores,
+                leadingMotivation: leadingMotivation,
+                minScore: minScore
+            };
+        }
+
+        // Отображение результатов
+        function displayResults(results) {
+            const chartContainer = document.getElementById('motivation-chart');
+            chartContainer.innerHTML = '';
+            
+            const interpretationContainer = document.getElementById('interpretation');
+            interpretationContainer.innerHTML = '';
+            
+            // Создаем график мотивации
+            testData.motivations.forEach(motivation => {
+                const score = results.scores[motivation.id];
+                const maxPossibleScore = testData.questions.length * 5;
+                const percentage = 100 - (score / maxPossibleScore) * 100;
+                
+                const motivationItem = document.createElement('div');
+                motivationItem.className = 'motivation-item';
+                
+                const motivationLabel = document.createElement('div');
+                motivationLabel.className = 'motivation-label';
+                
+                const motivationName = document.createElement('span');
+                motivationName.textContent = motivation.name;
+                
+                const motivationScore = document.createElement('span');
+                motivationScore.textContent = `${score} баллов`;
+                
+                motivationLabel.appendChild(motivationName);
+                motivationLabel.appendChild(motivationScore);
+                
+                const motivationBarContainer = document.createElement('div');
+                motivationBarContainer.className = 'motivation-bar-container';
+                
+                const motivationBar = document.createElement('div');
+                motivationBar.className = 'motivation-bar';
+                motivationBar.style.width = `${percentage}%`;
+                
+                motivationBarContainer.appendChild(motivationBar);
+                
+                motivationItem.appendChild(motivationLabel);
+                motivationItem.appendChild(motivationBarContainer);
+                
+                chartContainer.appendChild(motivationItem);
+            });
+            
+            // Добавляем интерпретацию
+            const leadingMotivation = testData.motivations.find(m => m.id === results.leadingMotivation);
+            
+            const interpretationTitle = document.createElement('h3');
+            interpretationTitle.textContent = 'Ваш ведущий мотив:';
+            
+            const leadingMotivationName = document.createElement('h4');
+            leadingMotivationName.textContent = leadingMotivation.name;
+            leadingMotivationName.style.color = 'var(--primary-color)';
+            
+            const leadingMotivationDesc = document.createElement('p');
+            leadingMotivationDesc.textContent = leadingMotivation.description;
+            leadingMotivationDesc.style.marginTop = '10px';
+            
+            const allMotivationsTitle = document.createElement('h4');
+            allMotivationsTitle.textContent = 'Все мотивы (от наиболее к наименее значимым):';
+            allMotivationsTitle.style.marginTop = '20px';
+            
+            // Сортируем мотивы по баллам (от меньшего к большему)
+            const sortedMotivations = [...testData.motivations].sort((a, b) => {
+                return results.scores[a.id] - results.scores[b.id];
+            });
+            
+            const motivationsList = document.createElement('ol');
+            motivationsList.className = 'motivation-details';
+            
+            sortedMotivations.forEach(motivation => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `<strong>${motivation.name}</strong>: ${motivation.description} (${results.scores[motivation.id]} баллов)`;
+                motivationsList.appendChild(listItem);
+            });
+            
+            interpretationContainer.appendChild(interpretationTitle);
+            interpretationContainer.appendChild(leadingMotivationName);
+            interpretationContainer.appendChild(leadingMotivationDesc);
+            interpretationContainer.appendChild(allMotivationsTitle);
+            interpretationContainer.appendChild(motivationsList);
+            
+            // Показываем контейнер с результатами
+            document.getElementById('results-container').style.display = 'block';
+        }
+    </script>
+</body>
 </html>
